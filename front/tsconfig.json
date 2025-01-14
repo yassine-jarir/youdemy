@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/contexts/AuthContexts.jsx", "src/app/not-found.jsx", "src/app/layout.jsx", "src/app/page.jsx", "src/app/auth/sign-in/page.jsx", "src/app/auth/sign-up/page.jsx", "src/components/auth/sign-in-form.jsx", "src/components/auth/reset-password-for, "src/components/auth/sign-up-form.jsx"m.jsx", "src/components/auth/layout.jsx", "src/app/client/layout.jsx"],
+  "exclude": ["node_modules"]
+}
