@@ -2,7 +2,7 @@
     "name": "youcode/backend",
     "autoload": {
         "psr-4": {
-            "Youcode\\Backend\\": "src/"
+            "Youdemy\\": "src/"
         }
     },
     "authors": [
@@ -11,9 +11,8 @@
             "email": "yassinejarir7@gmail.com"
         }
     ],
-    
-        "require": {
-            "firebase/php-jwt": "^6.0"
-        }
-    
+    "require": {
+        "firebase/php-jwt": "^6.0",
+        "vlucas/phpdotenv": "^5.6"
+    }
 }

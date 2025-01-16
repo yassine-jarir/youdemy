@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . '/routes/api.php';
+// require __DIR__ . '/vendor/autoload.php';
+
+require_once __DIR__ . '/src/routes/api.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     ini_set('session.cookie_secure', '1');
@@ -19,5 +21,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     header('HTTP/1.1 200 OK');
     exit();
 }
-
 // require_once './routes/api.php';
