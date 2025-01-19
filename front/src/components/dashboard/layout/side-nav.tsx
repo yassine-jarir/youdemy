@@ -7,7 +7,8 @@ import Box from '@mui/material/Box';
  import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-  
+  import lo from "../../../../public/youdemypng.png"
+import Image from 'next/image';
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
 import { isNavItemActive } from '@/lib/is-nav-item-active';
@@ -47,12 +48,12 @@ export function SideNav(): React.JSX.Element {
         '&::-webkit-scrollbar': { display: 'none' },
       }}
     >
-      <Stack spacing={2} sx={{ p: 3 }}>
+      <div className='flex justify-center items-center'>
         <Box component={RouterLink} href={paths.home} sx={{ display: 'inline-flex' }}>
-          <Logo color="light" height={32} width={122} />
-        </Box>
+          <Image src={lo} alt="Logo" width={120} height={120} className=' max-w-[90%]'  />
+         </Box>
        
-      </Stack>
+      </div>
       <Divider sx={{ borderColor: 'var(--mui-palette-neutral-700)' }} />
       <Box component="nav" sx={{ flex: '1 1 auto', p: '12px' }}>
         {renderNavItems({ pathname, items: navItems })}

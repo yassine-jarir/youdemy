@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import Cookies from 'js-cookie';
 import {
@@ -21,10 +22,11 @@ import {
 
 import { useAuth } from '@/contexts/AuthContexts';
 
+import lo from '../../../public/youdemypng.png';
+
 export default function ClientLayout({ children }) {
   const [user, setUser] = useState(null);
   const { logout } = useAuth();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const userCookie = Cookies.get('user');
@@ -47,20 +49,16 @@ export default function ClientLayout({ children }) {
       <nav className="bg-white/80 backdrop-blur-sm border-b border-purple-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo and Brand */}
-            <div className="flex items-center">
-              <span className="text-2xl font-extrabold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                Youdemy
-              </span>
+            <div className="flex justify-center items-center">
+              <Image src={lo} alt="Logo" width={120} height={120} className=" max-w-[69%]" />
             </div>
-
             <div className="hidden md:flex items-center space-x-8">
               {isVisitor && (
                 <>
                   <Link href="/visitor/courses" className="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">
                     Parcourir les Cours
                   </Link>
-                  <Link href="/visitor/signup" className="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">
+                  <Link href="/auth/sign-up" className="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">
                     Créer un Compte
                   </Link>
 
@@ -162,52 +160,6 @@ export default function ClientLayout({ children }) {
             </div>
           </div>
         </div>
-
-        {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 py-4">
-            <div className="space-y-2 px-4">
-              {isStudent && (
-                <>
-                  <Link
-                    href="/client/student/browserCourses"
-                    className="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg"
-                  >
-                    Parcourir les Cours
-                  </Link>
-                  <Link
-                    href="/client/student/mesCours"
-                    className="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg"
-                  >
-                    Mes Cours
-                  </Link>
-                </>
-              )}
-
-              {isTeacher && (
-                <>
-                  <Link
-                    href="/client/teacher/addCourse"
-                    className="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg"
-                  >
-                    Ajouter un Cours
-                  </Link>
-                  <Link
-                    href="/client/teacher/manageCourses"
-                    className="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg"
-                  >
-                    Gérer les Cours
-                  </Link>
-                  <Link
-                    href="/client/teacher/viewEnrol"
-                    className="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg"
-                  >
-                    Voir les Inscriptions
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        )}
       </nav>
 
       <div className="relative overflow-hidden bg-gradient-to-b from-purple-900 via-purple-800 to-indigo-900">

@@ -9,8 +9,7 @@ export default function Page() {
   const [tags, setTags] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
-  const [selectedTag, setSelectedTag] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+
   const [loading, setLoading] = useState(true);
   const [showTagForm, setShowTagForm] = useState(false);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
@@ -48,6 +47,20 @@ export default function Page() {
     } catch (error) {
       console.error('Failed to save tag:', error);
       error.response?.data?.error || 'Failed to save tag';
+    }
+  };
+  const deleteCourse = async (courseId) => {
+    try {
+      const response = await axios.delete('http://localhost:2325/api.php?route=admin/courses/delete', {
+        data: { course_id: courseId },
+      });
+
+      if (response.data.message) {
+        alert(response.data.message);
+        fetchCourses();
+      }
+    } catch (error) {
+      alert(error.response?.data?.error || 'Failed to delete course');
     }
   };
   const deleteTag = async (tagId) => {
@@ -312,10 +325,6 @@ export default function Page() {
         )}
       </div>
 
-      {(showTagForm || showCategoryForm || selectedCourse || selectedTag || selectedCategory) && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40"></div>
-      )}
-
       {showTagForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-md mx-4">
@@ -455,11 +464,15 @@ export default function Page() {
                 <div>
                   <h3 className="text-sm font-medium text-gray-500">Tags</h3>
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {selectedCourse.tags.split(',').map((tag, index) => (
-                      <span key={index} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
-                        {tag.trim()}
-                      </span>
-                    ))}
+                    {selectedCourse.tags ? (
+                      selectedCourse.tags.split(',').map((tag, index) => (
+                        <span key={index} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                          {tag.trim()}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-gray-500 text-sm">No tags available</span>
+                    )}
                   </div>
                 </div>
                 {selectedCourse.content_url && (
