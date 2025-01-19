@@ -40,6 +40,7 @@ export default function ClientLayout({ children }) {
 
   const isStudent = user?.role === 'student';
   const isTeacher = user?.role === 'teacher';
+  const isVisitor = !user;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50">
@@ -53,82 +54,111 @@ export default function ClientLayout({ children }) {
               </span>
             </div>
 
-            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
+              {isVisitor && (
+                <>
+                  <Link href="/visitor/courses" className="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">
+                    Parcourir les Cours
+                  </Link>
+                  <Link href="/visitor/signup" className="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg">
+                    Créer un Compte
+                  </Link>
+
+                  <Link
+                    href="/auth/sign-in"
+                    className="flex items-center space-x-2 px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                  >
+                    <LogOut className="h-5 w-5" />
+                    <span>Login</span>
+                  </Link>
+                </>
+              )}
+
               {isStudent && (
-                <div className="flex space-x-4">
-                  <Link
-                    href="/client/student/browserCourses"
-                    className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
-                  >
-                    <BookOpen className="h-5 w-5" />
-                    <span>Parcourir</span>
-                  </Link>
-                  <Link
-                    href="/client/student/mesCours"
-                    className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
-                  >
-                    <Book className="h-5 w-5" />
-                    <span>Mes Cours</span>
-                  </Link>
-                </div>
+                <>
+                  <div className="flex space-x-4">
+                    <Link
+                      href="/client/student/browserCourses"
+                      className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
+                    >
+                      <BookOpen className="h-5 w-5" />
+                      <span>Parcourir</span>
+                    </Link>
+                    <Link
+                      href="/client/student/mesCours"
+                      className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
+                    >
+                      <Book className="h-5 w-5" />
+                      <span>Mes Cours</span>
+                    </Link>
+                  </div>
+
+                  <div className="flex items-center space-x-4">
+                    <button className="text-gray-600 hover:text-purple-600">
+                      <Bell className="h-5 w-5" />
+                    </button>
+                    <div className="flex items-center space-x-2">
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 flex items-center justify-center">
+                        <User className="h-5 w-5 text-white" />
+                      </div>
+                      <span className="text-gray-700 font-medium">{user?.username}</span>
+                    </div>
+                    <button
+                      onClick={logout}
+                      className="flex items-center space-x-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <LogOut className="h-5 w-5" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                </>
               )}
 
               {isTeacher && (
-                <div className="flex space-x-4">
-                  <Link
-                    href="/client/teacher/addCourse"
-                    className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
-                  >
-                    <Plus className="h-5 w-5" />
-                    <span>Ajouter</span>
-                  </Link>
-                  <Link
-                    href="/client/teacher/manageCourses"
-                    className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
-                  >
-                    <Settings className="h-5 w-5" />
-                    <span>Gérer</span>
-                  </Link>
-                  <Link
-                    href="/client/teacher/viewEnrol"
-                    className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
-                  >
-                    <Users className="h-5 w-5" />
-                    <span>Inscriptions</span>
-                  </Link>
-                </div>
-              )}
-
-              {/* User Menu */}
-              <div className="flex items-center space-x-4">
-                <button className="text-gray-600 hover:text-purple-600">
-                  <Bell className="h-5 w-5" />
-                </button>
-                <div className="flex items-center space-x-2">
-                  <div className="h-8 w-8 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 flex items-center justify-center">
-                    <User className="h-5 w-5 text-white" />
+                <>
+                  <div className="flex space-x-4">
+                    <Link
+                      href="/client/teacher/addCourse"
+                      className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
+                    >
+                      <Plus className="h-5 w-5" />
+                      <span>Ajouter</span>
+                    </Link>
+                    <Link
+                      href="/client/teacher/manageCourses"
+                      className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
+                    >
+                      <Settings className="h-5 w-5" />
+                      <span>Gérer</span>
+                    </Link>
+                    <Link
+                      href="/client/teacher/viewEnrol"
+                      className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
+                    >
+                      <Users className="h-5 w-5" />
+                      <span>Inscriptions</span>
+                    </Link>
                   </div>
-                  <span className="text-gray-700 font-medium">{user?.username}</span>
-                </div>
-                <button
-                  onClick={logout}
-                  className="flex items-center space-x-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  <LogOut className="h-5 w-5" />
-                  <span>Logout</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="text-gray-600 hover:text-purple-600"
-              >
-                <Menu className="h-6 w-6" />
-              </button>
+                  <div className="flex items-center space-x-4">
+                    <button className="text-gray-600 hover:text-purple-600">
+                      <Bell className="h-5 w-5" />
+                    </button>
+                    <div className="flex items-center space-x-2">
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 flex items-center justify-center">
+                        <User className="h-5 w-5 text-white" />
+                      </div>
+                      <span className="text-gray-700 font-medium">{user?.username}</span>
+                    </div>
+                    <button
+                      onClick={logout}
+                      className="flex items-center space-x-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <LogOut className="h-5 w-5" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

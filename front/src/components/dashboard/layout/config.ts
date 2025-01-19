@@ -7,5 +7,5 @@ export const navItems = [
      href: paths.dashboard.teacherManage, icon: 'users' },
   { key: 'Gestion des Contenus', title: ' Gestion des Contenus', href: paths.dashboard.ContenusManage, icon: 'plugs-connected' },
   { key: 'Gestion des utilisateurs', title: 'Gestion des Utilisateurs', href: paths.dashboard.usersManage, icon: 'gear-six' },
-//   { key: 'Profile', title: 'Profile', href: paths.dashboard.account, icon: 'user' },
+  // { key: 'Visiteur', title: 'Visiteur', href: paths.dashboard.Visiteur, icon: 'user' },
  ] satisfies NavItemConfig[];

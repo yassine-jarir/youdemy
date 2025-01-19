@@ -5,21 +5,25 @@ export async function middleware(req) {
 
   const authRoutes = ['/auth/sign-in', '/auth/sign-up'];
   const adminRoutes = ['/dashboard', '/dashboard/usersManange', '/dashboard/teacherManage', '/dashboard/ContenusManage'];
-   const studentRoutes = ['/client/student'];
+  const studentRoutes = ['/client/student'];
   const teacherRoutes = ['/client/teacher'];
   const client = ['/client'];
+  const visitorRoute = '/client/visiteur';
+
+   if (pathname === visitorRoute) {
+    return NextResponse.next();
+  }
 
   try {
     const userCookie = req.cookies.get('user');
 
-     if (!userCookie && [...adminRoutes, ...studentRoutes, ...teacherRoutes,...client].some(route => pathname.startsWith(route))) {
+    if (!userCookie && [...adminRoutes, ...studentRoutes, ...teacherRoutes].some(route => pathname.startsWith(route))) {
       return NextResponse.redirect(new URL('/auth/sign-in', req.url));
     }
 
     if (userCookie) {
       const userData = JSON.parse(userCookie.value);
 
- 
       if (authRoutes.includes(pathname)) {
         let redirectUrl = '/';  
         if (userData.role === 'admin') {
@@ -31,6 +35,7 @@ export async function middleware(req) {
         }
         return NextResponse.redirect(new URL(redirectUrl, req.url));
       }
+
       if (client.includes(pathname)) {
         let redirectUrl = '/client';  
         if (userData.role === 'student') {
@@ -41,10 +46,6 @@ export async function middleware(req) {
         return NextResponse.redirect(new URL(redirectUrl, req.url));
       }
 
- 
-      if (userData.role === 'admin' && (teacherRoutes.some(route => pathname.startsWith(route)) || studentRoutes.some(route => pathname.startsWith(route)))) {
-        return NextResponse.redirect(new URL('/dashboard', req.url));
-      }
       if (userData.role === 'admin' && (teacherRoutes.some(route => pathname.startsWith(route)) || studentRoutes.some(route => pathname.startsWith(route)))) {
         return NextResponse.redirect(new URL('/dashboard', req.url));
       }
@@ -58,7 +59,7 @@ export async function middleware(req) {
       }
     }
 
-     return NextResponse.next();
+    return NextResponse.next();
   } catch (error) {
     console.error('Middleware Error:', error);
     return NextResponse.redirect(new URL('/auth/sign-in', req.url));
@@ -70,8 +71,8 @@ export const config = {
     '/dashboard/:path*',
     '/auth/sign-in',
     '/auth/sign-up',
-    '/client/:path*',
     '/client/teacher',
-    '/client/student'
+    '/client/student',
+    '/client/visiteur'
   ],
 };
