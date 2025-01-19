@@ -13,7 +13,7 @@ class TeacherController
         $this->teacher = new Teacher();
     }
 
-    public function addCourse()// done
+    public function addCourse()
     {
         $data = json_decode(file_get_contents("php://input"));
         if (
@@ -47,7 +47,7 @@ class TeacherController
         }
     }
 
-    public function getAllCourses() // done
+    public function getAllTeacherCourses()
     {
         $data = json_decode(file_get_contents("php://input"));
         if (empty($data->teacher_id)) {
@@ -90,7 +90,7 @@ class TeacherController
         }
     }
 
-    public function supprimerCourse($id)// done
+    public function supprimerCourse($id)
     {
         $result = $this->teacher->deleteCourse($id);
         if ($result) {
@@ -101,7 +101,7 @@ class TeacherController
             echo json_encode(['error' => 'Failed to delete course']);
         }
     }
-    public function viewCourseDetails($id)// done
+    public function viewCourseDetails($id)
     {
         $result = $this->teacher->getCategoryByID($id);
 
@@ -115,7 +115,7 @@ class TeacherController
         }
     }
 
-    public function viewEnrollments()// done
+    public function viewEnrollments()
     {
         $data = json_decode(file_get_contents("php://input"));
         if (empty($data->teacher_id)) {
@@ -128,7 +128,7 @@ class TeacherController
         echo json_encode(['data' => $enrollments]);
     }
 
-    public function viewStatistics()// done 
+    public function viewStatistics()
     {
         $data = json_decode(file_get_contents("php://input"));
         if (empty($data->teacher_id)) {

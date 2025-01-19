@@ -31,8 +31,8 @@ class Teacher extends User
         $stmt->bindParam(':teacher_id', $teacherId, PDO::PARAM_INT);
         $stmt->execute();
 
-        $teacher = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $teacher;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     }
 
     public function addCourse($courseData)
@@ -77,7 +77,7 @@ class Teacher extends User
     public function viewStatistics($teacherId)
     {
         try {
-             $query = "SELECT 
+            $query = "SELECT 
                         COUNT(*) as total_courses,
                         (SELECT COUNT(DISTINCT e.student_id) 
                          FROM enrollments e 

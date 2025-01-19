@@ -17,23 +17,18 @@ class User
     public function signup($username, $email, $password, $role)
     {
         try {
-             $query = "SELECT * FROM $this->table WHERE email = :email OR username = :username";
+            $query = "SELECT * FROM $this->table WHERE email = :email OR username = :username";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":email", $email);
             $stmt->bindParam(":username", $username);
             $stmt->execute();
 
             if ($stmt->rowCount() > 0) {
-                echo json_encode([
-                    'message' => 'User already exists',
-
-                ]);
-                return false;
+                return false; // User already exists
             }
 
-             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        
             $query = "INSERT INTO $this->table (username, email, password, role) 
                      VALUES (:username, :email, :password, :role)";
             $stmt = $this->conn->prepare($query);
@@ -43,16 +38,8 @@ class User
             $stmt->bindParam(":role", $role);
 
             if ($stmt->execute()) {
-                echo json_encode([
-                    'message' => 'User created successfully',
-
-                ]);
                 return $this->conn->lastInsertId();
             }
-            echo json_encode([
-                'message' => 'User creation failed',
-
-            ]);
             return false;
         } catch (\PDOException $e) {
             return false;
@@ -70,7 +57,7 @@ class User
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($user && password_verify($password, $user['password'])) {
-                unset($user['password']);  
+                unset($user['password']);
                 return $user;
             }
             return false;
@@ -93,6 +80,5 @@ class User
         } catch (\PDOException $e) {
             return false;
         }
-
     }
 }

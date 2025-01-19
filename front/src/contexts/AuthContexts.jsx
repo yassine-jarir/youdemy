@@ -11,33 +11,32 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const checkAuth = async () => {
-    try {
-      const response = await axios.get('http://localhost:4040/api.php?route=check-auth', {
-        withCredentials: true,
-      });
-      if (response.data.authenticated) {
-        setUser(response.data.user);
-      } else {
-        setUser(null);
-      }
-    } catch (error) {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const checkAuth = async () => {
+  //   try {
+  //     const response = await axios.get('http://localhost:2325/api.php?route=check-auth');
+
+  //     if (response.data.authenticated) {
+  //       setUser(response.data.user);
+  //     } else {
+  //       setUser(null);
+  //     }
+  //   } catch (error) {
+  //     setUser(null);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const login = async (email, password) => {
     try {
-      const response = await axios.post(
-        'http://localhost:4040/api.php?route=login',
-        { email, password },
-        { withCredentials: true }
-      );
+      const response = await axios.post('http://localhost:2325/api.php?route=login', { email, password });
 
-      if (response.data.user) {
+      if (response.data.message === 'Login successful') {
         setUser(response.data.user);
+
+        document.cookie = `token=${response.data.token}; path=/; max-age=3600`;
+        document.cookie = `user=${JSON.stringify(response.data.user)}; path=/; max-age=3600`;
+
         return response.data;
       } else {
         throw new Error(response.data.error || 'Login failed');
@@ -46,19 +45,19 @@ export function AuthProvider({ children }) {
       throw new Error(error.response?.data?.error || error.message || 'Login failed');
     }
   };
-
-  const signup = async (name, email, password) => {
+  const signup = async (username, email, password, role) => {
     try {
-      const response = await axios.post(
-        'http://localhost:4040/api.php?route=signup',
-        { name, email, password },
-        { withCredentials: true }
-      );
+      const response = await axios.post('http://localhost:2325/api.php?route=signup', {
+        username,
+        email,
+        password,
+        role,
+      });
 
-      if (response.data.user) {
+      if (response) {
         return response.data;
       } else {
-        throw new Error(response.data.error || 'Signup failed');
+        return response.data.error;
       }
     } catch (error) {
       throw new Error(error.response?.data?.error || error.message || 'Signup failed');
@@ -67,11 +66,13 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await axios.post('http://localhost:4040/api.php?route=logout', {}, { withCredentials: true });
+      document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
       setUser(null);
+
       router.push('/auth/sign-in');
-      router.refresh(); // Force refresh to update authentication state
+      router.refresh();
     } catch (error) {
       console.error('Logout error:', error);
       throw error;

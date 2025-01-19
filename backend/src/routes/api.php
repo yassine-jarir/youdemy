@@ -28,8 +28,12 @@ try {
         case 'login':
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $controller->login();
+            } else {
+                http_response_code(405);
+                echo json_encode(['error' => 'Method Not Allowed']);
             }
             break;
+
 
         case 'validate-token':
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -46,6 +50,11 @@ try {
         case 'admin/teachers/invalidate': // done
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $adminController->invalidateTeacherAccounts();
+            }
+            break;
+        case 'admin/users':
+            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+                $adminController->getAllUsers();
             }
             break;
         case 'admin/user/activate': // done
@@ -66,18 +75,11 @@ try {
             }
             break;
 
-        case 'admin/courses/manage': // done
+        // course gestionmmm
+        case 'admin/courses/all': // done
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 $adminController->getAllCourses();
             }
-            //  elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-            //     if (isset($_GET['action']) && $_GET['action'] === 'add') {
-            //         $adminController->addCourse();
-            //     } else {
-            //         $adminController->editCourse();
-            //     }
-            // }
             break;
 
         case 'admin/courses/get': // done
@@ -89,36 +91,67 @@ try {
 
         case 'admin/courses/delete': // done
             if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-                $id = $matches[1];
-                $adminController->supprimerCourse($id);
-            }
-            break;
-        case 'admin/tags/bulk': // done
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $adminController->bulkInsertTags();
+
+                $adminController->supprimerCourse();
             }
             break;
 
-        case 'admin/statistics': // done
+
+        // Tag routes
+        case 'admin/tags':
+            if ($_SERVER['REQUEST_METHOD'] === 'GET') { // done
+                $adminController->getAllTags();
+            } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') { // done
+                $adminController->addTag();
+            } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') { // done
+                $adminController->deleteTag();
+            }
+            break;
+
+
+
+        // Admin Category routes
+        case 'admin/categories': // done
+            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+                $adminController->getAllCategories();
+            } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $adminController->addCategory();
+            }
+            break;
+
+        case 'admin/categories/update': // done
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $adminController->updateCategory();
+            }
+            break;
+
+        case 'admin/categories/delete': // done
+            if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+                $adminController->deleteCategory();
+            }
+            break;
+
+        case 'admin/categories/get': //done
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $adminController->getCategoryById();
+            }
+            break;
+        case 'admin/globalStats': //done
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 $adminController->viewGlobalStatistics();
             }
             break;
 
-
-
-        case (preg_match('/^admin\/category\/get\/(\d+)$/', $route, $matches) ? true : false):
+        case 'admin/teachers':
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-                $id = $matches[1];
-                $adminController->getCategoryById($id);
+                $adminController->getAllTeachers();
             }
             break;
-
 
         // Teacher routes
         case 'teacher/courses/manage': // done
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $teacherController->getAllCourses();
+                $teacherController->getAllTeacherCourses();
             }
             break;
 
@@ -128,10 +161,24 @@ try {
             }
             break;
 
+        case (preg_match('/^teacher\/course\/getAndPost\/(\d+)$/', $route, $matches) ? true : false): // works
+            if ($_SERVER['REQUEST_METHOD'] === 'GET') { // done
+                $id = $matches[1];
+                $teacherController->viewCourseDetails($id);
+            }
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') { //done
+                $id = $matches[1];
+                $teacherController->modifierCourse($id);
+            }
+            if ($_SERVER['REQUEST_METHOD'] === 'DELETE') { //done
+                $id = $matches[1];
+                $teacherController->supprimerCourse($id);
+            }
+            break;
 
 
-        case 'teacher/enrollments': // done
-            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        case 'teacher/inscription': // done
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $teacherController->viewEnrollments();
             }
             break;
@@ -142,52 +189,37 @@ try {
             }
             break;
 
-        case (preg_match('/^student\/course\/getAndPost\/(\d+)$/', $route, $matches) ? true : false): // works
+        // etuddiant
+
+        case 'student/allCourses':
             if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-                $id = $matches[1];
-                $teacherController->viewCourseDetails($id);
+                $studentController->getAllcourses();
             }
+            break;
+
+        case 'student/courseDetails':
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $id = $matches[1];
-                $teacherController->modifierCourse($id);
+                $studentController->getCourseById();
             }
-            if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-                $id = $matches[1];
-                $teacherController->supprimerCourse($id);
+            break;
+
+        case 'student/inscriptCourse':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $studentController->inscriptCourse();
             }
             break;
 
 
 
 
-
-
-        // Example using a simple routing mechanism
-
-        // $router->put('/teacher/modifierCourse/{id}', 'TeacherController@modifierCourse');
-        // $router->delete('/teacher/supprimerCourse/{id}', 'TeacherController@supprimerCourse');
-        // Student routes
-        // case (preg_match('/^student\/course\/get\/(\d+)$/', $route, $matches) ? true : false):
-        //     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        //         $id = $matches[1];
-        //         $teacherController->viewCourseDetails($id);
-        //     }
-        //     break;
-
-        // case 'student/courses/my':
-        //     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        //         $studentController->viewMyCourses();
-        //     }
-        //     break;
-
-        default:
-            http_response_code(404);
-            echo json_encode(['error' => 'Route not found']);
-            break;
     }
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode([
-        'error' => $e->getMessage()
+        'file' => $e->getFile(),
+        'success' => false,
+        'error' => $e->getMessage(),
+        'line' => $e->getLine()
     ]);
+
 }

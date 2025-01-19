@@ -3,6 +3,7 @@
 import * as React from 'react';
 import RouterLink from 'next/link';
 import { useRouter } from 'next/navigation';
+import { ToggleButton } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -13,27 +14,36 @@ import InputLabel from '@mui/material/InputLabel';
 import Link from '@mui/material/Link';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import { Controller, useForm } from 'react-hook-form';
 
 import { useAuth } from '@/contexts/AuthContexts';
 
 const defaultValues = {
-  name: '',
+  username: '',
   email: '',
   password: '',
+  role: '',
   terms: false,
 };
 
 export function SignUpForm() {
   const router = useRouter();
   const { signup } = useAuth();
+  const [rule, setAlignment] = React.useState(null);
+
+  const handleChange = (event, newAlignment) => {
+    setAlignment(newAlignment);
+    setValue('role', newAlignment);
+  };
 
   const [isPending, setIsPending] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState(null);
 
   const {
     control,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -51,10 +61,13 @@ export function SignUpForm() {
       setErrorMessage(null);
 
       try {
-        await signup(values.name, values.email, values.password);
+        console.log(values);
+        const response = await signup(values.username, values.email, values.password, values.role);
+        console.log(response);
         router.push('/auth/sign-in');
       } catch (error) {
         setErrorMessage(error.message);
+        console.log(error);
       } finally {
         setIsPending(false);
       }
@@ -77,7 +90,7 @@ export function SignUpForm() {
         <Stack spacing={2}>
           <Controller
             control={control}
-            name="name"
+            name="username"
             rules={{
               required: 'Name is required',
               minLength: {
@@ -130,6 +143,10 @@ export function SignUpForm() {
               </FormControl>
             )}
           />
+          <ToggleButtonGroup color="primary" value={rule} exclusive onChange={handleChange} aria-label="Platform">
+            <ToggleButton value="student">étudiants </ToggleButton>
+            <ToggleButton value="teacher">Enseignant</ToggleButton>
+          </ToggleButtonGroup>
           <Controller
             control={control}
             name="terms"

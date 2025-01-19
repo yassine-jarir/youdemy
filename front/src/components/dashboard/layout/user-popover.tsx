@@ -26,11 +26,10 @@ export interface UserPopoverProps {
 
 export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): React.JSX.Element {
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const {  logout } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
 
-  // Handle Sign Out logic
-  const handleSignOut = React.useCallback(async (): Promise<void> => {
+   const handleSignOut = React.useCallback(async (): Promise<void> => {
     try {
       setIsLoggingOut(true);
       await logout();
@@ -59,13 +58,13 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
       </Box>
       <Divider />
       <MenuList disablePadding sx={{ p: '8px', '& .MuiMenuItem-root': { borderRadius: 1 } }}>
-        <MenuItem component={RouterLink} href={paths.dashboard.settings} onClick={onClose}>
+        <MenuItem component={RouterLink} href={`${paths.dashboard.settings}`} onClick={onClose}>
           <ListItemIcon>
             <GearSixIcon fontSize="var(--icon-fontSize-md)" />
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem component={RouterLink} href={paths.dashboard.account} onClick={onClose}>
+        <MenuItem component={RouterLink} href={`${paths.dashboard.account}`} onClick={onClose}>
           <ListItemIcon>
             <UserIcon fontSize="var(--icon-fontSize-md)" />
           </ListItemIcon>
