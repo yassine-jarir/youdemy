@@ -47,7 +47,7 @@ export function SignInForm() {
         const response = await login(values.email, values.password);
 
         // Redirect based on user role
-        if (response.user.role === 'admin') {
+        if (response.role === 'admin') {
           router.push('/dashboard');
         } else {
           router.push('/client');

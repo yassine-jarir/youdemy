@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jan 19, 2025 at 01:47 AM
+-- Generation Time: Jan 19, 2025 at 04:01 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -55,6 +55,7 @@ CREATE TABLE `courses` (
   `title` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `content` text NOT NULL,
+  `content_type` enum('video','document') NOT NULL,
   `category_id` int DEFAULT NULL,
   `teacher_id` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -67,9 +68,15 @@ CREATE TABLE `courses` (
 -- Dumping data for table `courses`
 --
 
-INSERT INTO `courses` (`course_id`, `title`, `description`, `content`, `category_id`, `teacher_id`, `created_at`, `updated_at`, `content_url`, `image_url`) VALUES
-(4, 'Introduction to Programming', 'This course covers the basics of programming.', 'Course content goes here...', 7, 12, '2025-01-16 15:02:16', '2025-01-18 20:32:23', 'https://www.youtube.com/watch?v=MPibCgyGunM', '//images.ctfassets.net/yadj1kx9rmg0/wtrHxeu3zEoEce2MokCSi/cf6f68efdcf625fdc060607df0f3baef/quwowooybuqbl6ntboz3.jpg'),
-(5, 'Introduction to Programming', 'This course covers the basics of programming.', 'Course content goes here...', 5, 12, '2025-01-17 00:48:38', '2025-01-18 20:41:05', 'https://www.youtube.com/watch?v=DWwxM4nkE_o', 'https://www.hocalwire.com/h-upload/uid/UrqcwKUWdSIBFwKspwg7hiPlTyX5TAoB7033284.jpg');
+INSERT INTO `courses` (`course_id`, `title`, `description`, `content`, `content_type`, `category_id`, `teacher_id`, `created_at`, `updated_at`, `content_url`, `image_url`) VALUES
+(4, 'Introduction to Programming', 'This course covers the basics of programming.', 'Course content goes here...', 'video', 7, 12, '2025-01-16 15:02:16', '2025-01-18 20:32:23', 'https://www.youtube.com/watch?v=MPibCgyGunM', '//images.ctfassets.net/yadj1kx9rmg0/wtrHxeu3zEoEce2MokCSi/cf6f68efdcf625fdc060607df0f3baef/quwowooybuqbl6ntboz3.jpg'),
+(5, 'Introduction to Programming', 'This course covers the basics of programming.', 'Course content goes here...', 'video', 5, 12, '2025-01-17 00:48:38', '2025-01-18 20:41:05', 'https://www.youtube.com/watch?v=DWwxM4nkE_o', 'https://www.hocalwire.com/h-upload/uid/UrqcwKUWdSIBFwKspwg7hiPlTyX5TAoB7033284.jpg'),
+(9, 'Eos in in soluta ea', 'Eos possimus conse', 'Id officia aut cum a', 'video', 7, 31, '2025-01-19 14:46:34', '2025-01-19 14:46:34', 'Nisi voluptas veniam', 'Nesciunt aliquip nu'),
+(10, 'Error laboriosam na', 'Dolor aut expedita r', 'Animi dicta ut corr', 'video', 12, 31, '2025-01-19 14:50:58', '2025-01-19 14:50:58', 'Accusantium nesciunt', 'Velit excepturi Nam'),
+(11, 'Distinctio Fugit d', 'Esse optio consequa', 'Iste sunt voluptate', 'video', 7, 31, '2025-01-19 14:53:05', '2025-01-19 14:53:05', 'A obcaecati error no', 'Voluptate consequatu'),
+(12, 'Corrupti omnis enim', 'Eos sequi quaerat c', 'Rem quas tempore ip', 'video', 10, 31, '2025-01-19 14:55:16', '2025-01-19 14:55:16', 'Sed dolor similique ', 'Numquam aute omnis s'),
+(13, 'Voluptas minus volup', 'Est et expedita dign', 'Assumenda rerum faci', 'video', 5, 31, '2025-01-19 14:55:54', '2025-01-19 14:55:54', 'Laborum Accusamus v', 'Maiores aliqua In a'),
+(14, 'Sit reprehenderit e', 'Et neque voluptas re', 'Ut ut est distinctio', 'video', 10, 31, '2025-01-19 14:58:40', '2025-01-19 14:58:40', 'https://www.youtube.com/watch?v=0SJbom3LFj8', 'https://plus.unsplash.com/premium_photo-1734543932716-431337d9c3c4?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
 
 -- --------------------------------------------------------
 
@@ -88,8 +95,13 @@ CREATE TABLE `course_tags` (
 
 INSERT INTO `course_tags` (`course_id`, `tag_id`) VALUES
 (5, 3),
+(12, 3),
+(13, 3),
+(14, 3),
 (5, 6),
-(4, 32);
+(13, 6),
+(14, 6),
+(13, 32);
 
 -- --------------------------------------------------------
 
@@ -196,7 +208,8 @@ INSERT INTO `users` (`user_id`, `username`, `email`, `password`, `role`, `is_act
 (49, 'jityr', 'fefabexo@mailinator.com', '$2y$12$7WQOlDVahr0FxwWLF/Xv7.lvGeNauZBv.KlWJ/HYHPf2zXrB1PUHy', 'teacher', 1, '2025-01-18 13:28:07', '2025-01-18 13:28:07'),
 (50, 'menydavym', 'gybaxyw@mailinator.com', '$2y$12$HI5QnBjNL9gJHxxO7o88te/uG5ZTCww/6drRTb9Yr63hI4YTxo2ey', 'student', 1, '2025-01-18 13:28:20', '2025-01-18 13:28:20'),
 (51, 'pucybew', 'ziducihada@mailinator.com', '$2y$12$aOLjskp9I0FF2CXhVc8SFu9mV2h5lvhMPCbBoXFaoaT/HfsVeZez6', 'student', 1, '2025-01-18 13:28:30', '2025-01-18 13:28:30'),
-(52, 'mavinunyz', 'bytaza@mailinator.com', '$2y$12$LU8yMQ9cWwrw4aZib3FVP.9BmHAO1i70pnmfO/XX.NurpQlfeL9j2', 'teacher', 1, '2025-01-18 13:34:11', '2025-01-18 13:34:11');
+(52, 'mavinunyz', 'bytaza@mailinator.com', '$2y$12$LU8yMQ9cWwrw4aZib3FVP.9BmHAO1i70pnmfO/XX.NurpQlfeL9j2', 'teacher', 1, '2025-01-18 13:34:11', '2025-01-18 13:34:11'),
+(53, 'yassine jr', 'admin@admin.com', '$2y$12$kDsvGEaCsiI6wpqUiLTFV.wnEkBWe4qbNjCTtmraFIS1C0lPIpESm', 'admin', 1, '2025-01-19 14:59:37', '2025-01-19 15:00:20');
 
 --
 -- Indexes for dumped tables
@@ -261,7 +274,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `courses`
 --
 ALTER TABLE `courses`
-  MODIFY `course_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `course_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `enrollments`
@@ -279,7 +292,7 @@ ALTER TABLE `tags`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- Constraints for dumped tables

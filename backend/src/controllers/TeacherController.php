@@ -19,7 +19,7 @@ class TeacherController
         if (
             empty($data->title) || empty($data->description) ||
             empty($data->content) || empty($data->teacher_id) ||
-            empty($data->category_id)
+            empty($data->category_id) || empty($data->content_url) || empty($data->image_url) || empty($data->tags)
         ) {
             http_response_code(400);
             echo json_encode(['error' => 'All fields are required']);
@@ -31,7 +31,12 @@ class TeacherController
             'description' => $data->description,
             'content' => $data->content,
             'teacher_id' => $data->teacher_id,
-            'category_id' => $data->category_id
+            'category_id' => $data->category_id,
+            'content_url' => $data->content_url,
+            'image_url' => $data->image_url,
+            'tags' => $data->tags,
+            'content_type' => $data->content_type
+
         ];
 
         $result = $this->teacher->addCourse($courseData);
@@ -65,7 +70,7 @@ class TeacherController
         if (
             empty($data->title) || empty($data->description) ||
             empty($data->content) || empty($data->teacher_id) ||
-            empty($data->category_id)
+            empty($data->category_id) || empty($data->content_type)
         ) {
             http_response_code(400);
             echo json_encode(['error' => 'All fields are required']);
@@ -77,7 +82,10 @@ class TeacherController
             'description' => $data->description,
             'content' => $data->content,
             'teacher_id' => $data->teacher_id,
-            'category_id' => $data->category_id
+            'category_id' => $data->category_id,
+            'content_url' => $data->content_url,
+            'image_url' => $data->image_url,
+            'content_type' => $data->content_type
         ];
 
         $result = $this->teacher->updateCourse($id, $courseData);
@@ -89,7 +97,6 @@ class TeacherController
             echo json_encode(['error' => 'Failed to update course']);
         }
     }
-
     public function supprimerCourse($id)
     {
         $result = $this->teacher->deleteCourse($id);

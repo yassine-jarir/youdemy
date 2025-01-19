@@ -1,109 +1,278 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import Cookies from 'js-cookie';
+import {
+  Bell,
+  Book,
+  BookOpen,
+  Globe,
+  LogOut,
+  Menu,
+  Plus,
+  Search,
+  Settings,
+  Sparkles,
+  Target,
+  User,
+  Users,
+} from 'lucide-react';
+
 import { useAuth } from '@/contexts/AuthContexts';
 
-// import { useState } from 'react';
-// import Link from 'next/link';
-// import { useRouter } from 'next/navigation';
-
-// import { useAuth } from '@/contexts/AuthContexts';
-
 export default function ClientLayout({ children }) {
-  // const router = useRouter();
-  // const [activeRole, setActiveRole] = useState('etudiant');
+  const [user, setUser] = useState(null);
+  const { logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // const handleRoleChange = (role) => {
-  //   setActiveRole(role);
-  //   // router.push(`/client/${role}`);
-  // };
-  const { user } = useAuth();
-  console.log(user);
+  useEffect(() => {
+    const userCookie = Cookies.get('user');
+    if (userCookie) {
+      try {
+        const userData = JSON.parse(userCookie);
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to parse user cookie:', error);
+      }
+    }
+  }, []);
+
+  const isStudent = user?.role === 'student';
+  const isTeacher = user?.role === 'teacher';
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Navbar */}
-      <nav className="bg-white shadow-md">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50">
+      <nav className="bg-white/80 backdrop-blur-sm border-b border-purple-100 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
+            {/* Logo and Brand */}
             <div className="flex items-center">
-              <span className="text-2xl font-bold text-blue-600">Youdemy</span>
+              <span className="text-2xl font-extrabold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                Youdemy
+              </span>
             </div>
-            <div className="flex space-x-4">
-              {/* <button
-                onClick={() => handleRoleChange('etudiant')}
-                className={`px-4 py-2 rounded-lg ${
-                  activeRole === 'etudiant' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'
-                }`}
-              >
-                Étudiant
-              </button>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              {isStudent && (
+                <div className="flex space-x-4">
+                  <Link
+                    href="/client/student/browserCourses"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
+                  >
+                    <BookOpen className="h-5 w-5" />
+                    <span>Parcourir</span>
+                  </Link>
+                  <Link
+                    href="/client/student/mesCours"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
+                  >
+                    <Book className="h-5 w-5" />
+                    <span>Mes Cours</span>
+                  </Link>
+                </div>
+              )}
+
+              {isTeacher && (
+                <div className="flex space-x-4">
+                  <Link
+                    href="/client/teacher/addCourse"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
+                  >
+                    <Plus className="h-5 w-5" />
+                    <span>Ajouter</span>
+                  </Link>
+                  <Link
+                    href="/client/teacher/manageCourses"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
+                  >
+                    <Settings className="h-5 w-5" />
+                    <span>Gérer</span>
+                  </Link>
+                  <Link
+                    href="/client/teacher/viewEnrol"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-purple-600 transition-colors"
+                  >
+                    <Users className="h-5 w-5" />
+                    <span>Inscriptions</span>
+                  </Link>
+                </div>
+              )}
+
+              {/* User Menu */}
+              <div className="flex items-center space-x-4">
+                <button className="text-gray-600 hover:text-purple-600">
+                  <Bell className="h-5 w-5" />
+                </button>
+                <div className="flex items-center space-x-2">
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 flex items-center justify-center">
+                    <User className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-gray-700 font-medium">{user?.username}</span>
+                </div>
+                <button
+                  onClick={logout}
+                  className="flex items-center space-x-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                >
+                  <LogOut className="h-5 w-5" />
+                  <span>Logout</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
               <button
-                onClick={() => handleRoleChange('teacher')}
-                className={`px-4 py-2 rounded-lg ${
-                  activeRole === 'teacher' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700'
-                }`}
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="text-gray-600 hover:text-purple-600"
               >
-                Enseignant
-              </button> */}
+                <Menu className="h-6 w-6" />
+              </button>
             </div>
-          </div>
-
-          <div className="flex space-x-4 mt-4 pb-4">
-            {/* {activeRole === 'etudiant' && (
-              <>
-                <Link
-                  href="/client/etudiant/browserCourses"
-                  className="px-6 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-100"
-                >
-                  Parcourir les Cours
-                </Link>
-                <Link
-                  href="/client/etudiant/mesCours"
-                  className="px-6 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-100"
-                >
-                  Mes Cours
-                </Link>
-              </>
-            )} */}
-
-            {/* {activeRole === 'teacher' && (
-              <>
-                <Link
-                  href="/client/teacher/addCourse"
-                  className="px-6 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-100"
-                >
-                  Ajouter un Cours
-                </Link>
-                <Link
-                  href="/client/teacher/manageCourses"
-                  className="px-6 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-100"
-                >
-                  Gérer les Cours
-                </Link>
-                <Link
-                  href="/client/teacher/viewEnrol"
-                  className="px-6 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-100"
-                >
-                  Voir les Inscriptions
-                </Link>
-              </>
-            )} */}
           </div>
         </div>
+
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-gray-200 py-4">
+            <div className="space-y-2 px-4">
+              {isStudent && (
+                <>
+                  <Link
+                    href="/client/student/browserCourses"
+                    className="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg"
+                  >
+                    Parcourir les Cours
+                  </Link>
+                  <Link
+                    href="/client/student/mesCours"
+                    className="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg"
+                  >
+                    Mes Cours
+                  </Link>
+                </>
+              )}
+
+              {isTeacher && (
+                <>
+                  <Link
+                    href="/client/teacher/addCourse"
+                    className="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg"
+                  >
+                    Ajouter un Cours
+                  </Link>
+                  <Link
+                    href="/client/teacher/manageCourses"
+                    className="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg"
+                  >
+                    Gérer les Cours
+                  </Link>
+                  <Link
+                    href="/client/teacher/viewEnrol"
+                    className="block px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg"
+                  >
+                    Voir les Inscriptions
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </nav>
 
-      <div className="bg-blue-600 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold mb-4">Bienvenue sur Youdemy</h1>
-          {/* <p className="text-lg mb-8">
-            {activeRole === 'etudiant'
-              ? 'Explorez notre catalogue de cours et commencez votre apprentissage dès aujourd’hui.'
-              : 'Gérez vos cours, consultez les inscriptions et suivez vos statistiques.'}
-          </p> */}
+      <div className="relative overflow-hidden bg-gradient-to-b from-purple-900 via-purple-800 to-indigo-900">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-[url('/api/placeholder/800/400')] mix-blend-overlay opacity-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/90 to-indigo-900/90"></div>
+          <div className="absolute inset-y-0 right-0 w-1/2">
+            <svg
+              className="absolute left-0 h-full w-48 text-purple-900 fill-current transform translate-x-1/2"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <polygon points="50,0 100,0 50,100 0,100" />
+            </svg>
+          </div>
+        </div>
+
+        <div className="h-[85vh] flex justify-center items-center relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Hero Content */}
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight">
+                  Bienvenue sur <span className="text-purple-300">Youdemy</span>
+                </h1>
+                <p className="text-xl text-purple-100">
+                  {isStudent
+                    ? "Embarquez pour une expérience d'apprentissage unique et personnalisée."
+                    : "Partagez votre expertise et inspirez la prochaine génération d'apprenants."}
+                </p>
+              </div>
+
+              {/* Feature Cards */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-purple-500/20">
+                  <Globe className="h-6 w-6 text-purple-300 mb-2" />
+                  <h3 className="text-lg font-semibold text-white">Cours Interactifs</h3>
+                  <p className="text-purple-200 text-sm">Accédez à des contenus de qualité</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-purple-500/20">
+                  <Target className="h-6 w-6 text-purple-300 mb-2" />
+                  <h3 className="text-lg font-semibold text-white">Apprentissage Ciblé</h3>
+                  <p className="text-purple-200 text-sm">Progressez à votre rythme</p>
+                </div>
+              </div>
+
+              {/* Search Bar */}
+              {isStudent && (
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    className="block w-full pl-10 pr-4 py-3 border border-purple-500/20 rounded-xl bg-white/10 backdrop-blur-sm text-white placeholder-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Rechercher un cours..."
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Stats Section */}
+            <div className="hidden md:block relative">
+              <div className="absolute -inset-4">
+                <div className="w-full h-full mx-auto opacity-30 blur-lg filter bg-gradient-to-r from-purple-400 to-indigo-400"></div>
+              </div>
+              <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/20">
+                <div className="grid grid-cols-2 gap-8">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-white">100+</div>
+                    <div className="text-purple-200 mt-1">Cours Disponibles</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-white">50+</div>
+                    <div className="text-purple-200 mt-1">Instructeurs</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-white">1000+</div>
+                    <div className="text-purple-200 mt-1">Étudiants</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-white">24/7</div>
+                    <div className="text-purple-200 mt-1">Support</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</main>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-white rounded-xl shadow-sm p-6">{children}</div>
+      </main>
     </div>
   );
 }

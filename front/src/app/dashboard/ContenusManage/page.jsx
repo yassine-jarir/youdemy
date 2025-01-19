@@ -198,11 +198,15 @@ export default function Page() {
                             <span className="ml-2">{course.teacher_name}</span>
                           </div>
                           <div className="flex flex-wrap gap-2 mt-3">
-                            {course.tags.split(',').map((tag, index) => (
-                              <span key={index} className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
-                                {tag.trim()}
-                              </span>
-                            ))}
+                            {course.tags ? (
+                              course.tags.split(',').map((tag, index) => (
+                                <span key={index} className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
+                                  {tag.trim()}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-gray-500 text-xs">No tags available</span>
+                            )}
                           </div>
                         </div>
                         <div className="mt-6 flex space-x-3">

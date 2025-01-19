@@ -319,7 +319,7 @@ class Admin extends User
         }
     }
 
-    public function getAllCategories() // worksss
+    public function getAllCategories()
     {
         try {
             $query = "SELECT * FROM categories";

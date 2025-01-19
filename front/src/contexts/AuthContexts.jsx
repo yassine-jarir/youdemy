@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 const AuthContext = createContext(undefined);
 
@@ -26,18 +27,24 @@ export function AuthProvider({ children }) {
   //     setLoading(false);
   //   }
   // };
-
+  const check = () => {
+    return user;
+  };
   const login = async (email, password) => {
     try {
       const response = await axios.post('http://localhost:2325/api.php?route=login', { email, password });
 
       if (response.data.message === 'Login successful') {
-        setUser(response.data.user);
+        const userData = jwtDecode(response.data.token);
+        setUser(userData.user);
 
+        // if (token) {
+        console.log(userData.user); // { id: 1, role: 'etudiant', exp: 1234567890 }
+        // }
         document.cookie = `token=${response.data.token}; path=/; max-age=3600`;
-        document.cookie = `user=${JSON.stringify(response.data.user)}; path=/; max-age=3600`;
+        document.cookie = `user=${JSON.stringify(userData.user)}; path=/; max-age=3600`;
 
-        return response.data;
+        return userData.user;
       } else {
         throw new Error(response.data.error || 'Login failed');
       }
@@ -79,12 +86,12 @@ export function AuthProvider({ children }) {
     }
   };
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
+  // useEffect(() => {
+  //   checkAuth();
+  // }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, signup, checkAuth }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, loading, login, logout, signup, check }}>{children}</AuthContext.Provider>
   );
 }
 

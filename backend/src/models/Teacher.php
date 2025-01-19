@@ -2,19 +2,21 @@
 namespace Models;
 
 require_once(dirname(__FILE__) . "/../config/Database.php");
+require_once(dirname(__FILE__) . "/Video.php");
+require_once(dirname(__FILE__) . "/Document.php");
 use Config\Database;
 use PDO;
 
-class Teacher extends User
+class Teacher
 {
     private $conn;
 
     public function __construct()
     {
-        parent::__construct();
         $this->conn = (new Database())->getConnect();
     }
-    public function manageCourses($teacherId)// work
+
+    public function manageCourses($teacherId)
     {
         $query = "SELECT c.*, cat.name as category_name, u.username as teacher_name, 
                  (SELECT COUNT(*) FROM enrollments e WHERE e.course_id = c.course_id) as enrollment_count,
@@ -32,30 +34,16 @@ class Teacher extends User
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     }
 
     public function addCourse($courseData)
     {
         try {
-            $query = "INSERT INTO courses (title, description, content, category_id, teacher_id) 
-                     VALUES (:title, :description, :content, :category_id, :teacher_id)";
-
-            $stmt = $this->conn->prepare($query);
-
-            // Bind parameters
-            $stmt->bindParam(':title', $courseData['title']);
-            $stmt->bindParam(':description', $courseData['description']);
-            $stmt->bindParam(':content', $courseData['content']);
-            $stmt->bindParam(':category_id', $courseData['category_id']);
-            $stmt->bindParam(':teacher_id', $courseData['teacher_id']);
-
-            if ($stmt->execute()) {
-                return $this->conn->lastInsertId();
-            }
-            return false;
+            $contentClass = $courseData['content_type'] === 'video' ? new Video($this->conn) : new Document($this->conn);
+            return $contentClass->addContent($courseData);
         } catch (\PDOException $e) {
-            return false;
+            error_log("Error adding course: " . $e->getMessage());
+            return $e->getMessage();
         }
     }
 
@@ -105,31 +93,17 @@ class Teacher extends User
     public function getCategoryByID($id)
     {
         $query = "SELECT * FROM courses WHERE course_id = :course_id";
-        $stmp = $this->conn->prepare(query: $query);
-        $stmp->bindParam(":course_id", $id, PDO::PARAM_INT);
-        $stmp->execute();
-        return $stmp->fetch(PDO::FETCH_ASSOC);
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":course_id", $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function updateCourse($id, $courseData)
     {
         try {
-            $query = "UPDATE courses 
-                      SET title = :title, description = :description, content = :content, 
-                          category_id = :category_id, teacher_id = :teacher_id 
-                      WHERE course_id = :course_id";
-
-            $stmt = $this->conn->prepare($query);
-
-            // Bind parameters
-            $stmt->bindParam(':title', $courseData['title']);
-            $stmt->bindParam(':description', $courseData['description']);
-            $stmt->bindParam(':content', $courseData['content']);
-            $stmt->bindParam(':category_id', $courseData['category_id']);
-            $stmt->bindParam(':teacher_id', $courseData['teacher_id']);
-            $stmt->bindParam(':course_id', $id, PDO::PARAM_INT);
-
-            return $stmt->execute();
+            $contentClass = $courseData['content_type'] === 'video' ? new Video($this->conn) : new Document($this->conn);
+            return $contentClass->updateContent($id, $courseData);
         } catch (\PDOException $e) {
             return false;
         }
@@ -138,10 +112,14 @@ class Teacher extends User
     public function deleteCourse($id)
     {
         try {
-            $query = "DELETE FROM courses WHERE course_id = :course_id";
+            $query = "SELECT content_type FROM courses WHERE course_id = :course_id";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':course_id', $id, PDO::PARAM_INT);
-            return $stmt->execute();
+            $stmt->execute();
+            $contentType = $stmt->fetchColumn();
+
+            $contentClass = $contentType === 'video' ? new Video($this->conn) : new Document($this->conn);
+            return $contentClass->deleteContent($id);
         } catch (\PDOException $e) {
             return false;
         }

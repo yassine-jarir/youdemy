@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import '@/styles/global.css';
 
-import { AuthProvider } from '@/contexts/AuthContexts';
+import { AuthProvider, useAuth } from '@/contexts/AuthContexts';
 import { LocalizationProvider } from '@/components/core/localization-provider';
 import { ThemeProvider } from '@/components/core/theme-provider/theme-provider';
 
