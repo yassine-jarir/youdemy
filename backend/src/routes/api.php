@@ -209,7 +209,11 @@ try {
             }
             break;
 
-
+        case 'student/viewMyCourses':
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                $studentController->viewMyCourses();
+            }
+            break;
 
 
     }

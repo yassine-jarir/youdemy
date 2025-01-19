@@ -69,4 +69,23 @@ class StudentController
             echo json_encode(['error' => 'Failed to inscript course']);
         }
     }
+    public function viewMyCourses()
+    {
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        if (empty($data['student_id'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Student ID is required']);
+            return;
+        }
+
+        $courses = $this->Student->viewMyCoursesStudent($data['student_id']);
+
+        if ($courses) {
+            echo json_encode(['data' => $courses]);
+        } else {
+            http_response_code(404);
+            echo json_encode(['error' => 'No courses found']);
+        }
+    }
 }
