@@ -27,9 +27,7 @@ export function AuthProvider({ children }) {
   //     setLoading(false);
   //   }
   // };
-  const check = () => {
-    return user;
-  };
+
   const login = async (email, password) => {
     try {
       const response = await axios.post('http://localhost:2325/api.php?route=login', { email, password });
@@ -38,9 +36,8 @@ export function AuthProvider({ children }) {
         const userData = jwtDecode(response.data.token);
         setUser(userData.user);
 
-        // if (token) {
-        console.log(userData.user); // { id: 1, role: 'etudiant', exp: 1234567890 }
-        // }
+        console.log(userData.user);
+
         document.cookie = `token=${response.data.token}; path=/; max-age=3600`;
         document.cookie = `user=${JSON.stringify(userData.user)}; path=/; max-age=3600`;
 
@@ -86,13 +83,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // useEffect(() => {
-  //   checkAuth();
-  // }, []);
-
-  return (
-    <AuthContext.Provider value={{ user, loading, login, logout, signup, check }}>{children}</AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ user, loading, login, logout, signup }}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => {

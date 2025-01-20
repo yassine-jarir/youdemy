@@ -12,6 +12,6 @@ abstract class Content
 
     abstract public function addContent($data);
     abstract public function updateContent($id, $data);
-    abstract public function deleteContent($id);
     abstract public function getContentById($id);
+
 }

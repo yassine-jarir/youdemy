@@ -18,7 +18,7 @@ export default function ViewEnrollmentsPage() {
           teacher_id,
         });
         setEnrollments(enrollmentsResponse.data.data);
-        console.log(enrollments);
+        console.log('enrollments', enrollmentsResponse.data.data);
       } catch (error) {
         setError('Failed to fetch data: ' + error.message);
       } finally {
@@ -47,8 +47,13 @@ export default function ViewEnrollmentsPage() {
       ) : (
         <ul>
           {enrollments.map((enrollment) => (
-            <li key={enrollment.enrollment_id} className="mb-4 p-4 border rounded-lg">
+            <li key={enrollment.enrollment_id} className="mb-4 p-4 border rounded-lg w-[500px] flex gap-8 flex-col">
               <h3 className="text-xl font-bold">{enrollment.course_title}</h3>
+
+              <div className="relative h-48 w-full rounded-sm">
+                <img src={enrollment.image_url} className="w-full h-full object-cover rounded-lg" />
+              </div>
+
               <p className="text-gray-600">Étudiant: {enrollment.student_name}</p>
               <p className="text-gray-600">
                 Date d'inscription: {new Date(enrollment.enrollment_date).toLocaleDateString()}

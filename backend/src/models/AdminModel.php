@@ -1,52 +1,24 @@
 <?php
 namespace Models;
+require_once(dirname(__FILE__) . "/ManageCourse.php");
 
 require_once(dirname(__FILE__) . "/../config/Database.php");
+
+use Models\ManageCourse;
 use Config\Database;
 use PDO;
 
-class Admin extends User
+class Admin extends ManageCourse
 {
     private $conn;
     private $table = "users";
 
     public function __construct()
     {
-        parent::__construct();
         $this->conn = (new Database())->getConnect();
+        parent::__construct($this->conn);
     }
-    public function getAllUsers()
-    {
-        try {
-
-            $query = "SELECT user_id, username, email, role, is_active FROM users";
-            $stmt = $this->conn->prepare($query);
-            $stmt->execute();
-
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (\PDOException $e) {
-
-            error_log("Error fetching users: " . $e->getMessage());
-            return false;
-        }
-    }
-    public function getAllTeachers()
-    {
-        try {
-
-            $query = "SELECT user_id, username, email, is_active FROM users WHERE role = 'teacher'";
-            $stmt = $this->conn->prepare($query);
-            $stmt->execute();
-
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (\PDOException $e) {
-
-            error_log("Error fetching teachers: " . $e->getMessage());
-            return false;
-        }
-    }
+    // manage teachersss
     public function validateTeacherAccounts($teacherId)
     {
         try {
@@ -83,33 +55,89 @@ class Admin extends User
             return false;
         }
     }
+    public function getAllTeachers()
+    {
+        try {
+
+            $query = "SELECT user_id, username, email, is_active FROM users WHERE role = 'teacher'";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+
+            error_log("Error fetching teachers: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // manage all usersss
+    public function getAllUsers()
+    {
+        try {
+
+            $query = "SELECT user_id, username, email, role, is_active FROM users";
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute();
+
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+
+            error_log("Error fetching users: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function deleteUser($userId)
+    {
+        $query = "DELETE FROM $this->table 
+                 WHERE user_id = :user_id";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":user_id", $userId, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
+    public function StatusActiveSuspend($userId, $status)
+    {
+        $query = "UPDATE $this->table 
+                 SET is_active = :status 
+                 WHERE user_id = :user_id";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":status", $status, PDO::PARAM_INT);
+        $stmt->bindParam(":user_id", $userId, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
 
     // content managment
-
-    public function getAllCoursesWithDetails()
+    public function getAllCoursesWithDetails($teacherId)
     {
         $query = "SELECT 
-                      c.course_id, 
-                      c.title, 
-                      c.description, 
-                      c.content, 
-                      c.content_url, 
-                      c.image_url, 
-                      cat.name AS category_name, 
-                      u.username AS teacher_name, 
-                      GROUP_CONCAT(t.name) AS tags
-                  FROM 
-                      courses c
-                  JOIN 
-                      categories cat ON c.category_id = cat.category_id
-                  JOIN 
-                      users u ON c.teacher_id = u.user_id
-                  LEFT JOIN 
-                      course_tags ct ON c.course_id = ct.course_id
-                  LEFT JOIN 
-                      tags t ON ct.tag_id = t.tag_id
-                  GROUP BY 
-                      c.course_id";
+            c.course_id, 
+            c.title, 
+            c.description, 
+            c.content, 
+            c.content_url, 
+            c.image_url, 
+            cat.name AS category_name, 
+            u.username AS teacher_name, 
+            GROUP_CONCAT(t.name) AS tags
+        FROM 
+            courses c
+        JOIN 
+            categories cat ON c.category_id = cat.category_id
+        JOIN 
+            users u ON c.teacher_id = u.user_id
+        LEFT JOIN 
+            course_tags ct ON c.course_id = ct.course_id
+        LEFT JOIN 
+            tags t ON ct.tag_id = t.tag_id
+        GROUP BY 
+            c.course_id";
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -119,6 +147,7 @@ class Admin extends User
         }
         return false;
     }
+
 
     public function getCourseById($courseId)
     {
@@ -152,45 +181,6 @@ class Admin extends User
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
-    public function deleteCourse($id)
-    {
-        try {
-            $query = "DELETE FROM courses WHERE course_id = :course_id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':course_id', $id, PDO::PARAM_INT);
-            return $stmt->execute();
-        } catch (\PDOException $e) {
-            return false;
-        }
-    }
-    public function updateStatus($userId, $status)
-    {
-        $query = "UPDATE $this->table 
-                 SET is_active = :status 
-                 WHERE user_id = :user_id";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":status", $status, PDO::PARAM_INT);
-        $stmt->bindParam(":user_id", $userId, PDO::PARAM_INT);
-
-        return $stmt->execute();
-    }
-
-    public function deleteUser($userId)
-    {
-        $query = "DELETE FROM $this->table 
-                 WHERE user_id = :user_id";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(":user_id", $userId, PDO::PARAM_INT);
-
-        return $stmt->execute();
-    }
-
-
-
-
-
     private function updateCourseTags($courseId, $tagIds)
     {
         $query = "DELETE FROM course_tags WHERE course_id = :course_id";
@@ -207,6 +197,7 @@ class Admin extends User
             $stmt->execute();
         }
     }
+
 
     public function viewGlobalStatistics()
     {
@@ -244,24 +235,6 @@ class Admin extends User
             return false;
         }
     }
-
-
-
-    public function bulkInsertTags($tags)
-    {
-        $query = "INSERT INTO tags (name) VALUES (:name)";
-        $stmt = $this->conn->prepare($query);
-
-
-        $this->conn->beginTransaction();
-        foreach ($tags as $tag) {
-            $stmt->execute([':name' => $tag]);
-        }
-        $this->conn->commit();
-        return true;
-
-    }
-
 
 
     // Tags CRUD
@@ -306,7 +279,7 @@ class Admin extends User
     }
 
 
-    // CATEGORY CRUD
+    // CATEGORY managee
     public function deleteCategory($categoryId)
     {
         try {
@@ -354,7 +327,6 @@ class Admin extends User
         return $stmt->execute();
 
     }
-
 
     public function getCategoryByID($categoryId)
     {

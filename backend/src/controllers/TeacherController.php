@@ -51,19 +51,39 @@ class TeacherController
             echo json_encode(['error' => 'Failed to create course']);
         }
     }
-
     public function getAllTeacherCourses()
     {
         $data = json_decode(file_get_contents("php://input"));
-        if (empty($data->teacher_id)) {
+        if (
+            empty($data->teacher_id)
+        ) {
             http_response_code(400);
-            echo json_encode(['error' => 'Teacher ID is required']);
+            echo json_encode(['error' => 'All fields are required']);
             return;
         }
 
-        $courses = $this->teacher->manageCourses($data->teacher_id);
-        echo json_encode(['data' => $courses]);
+        $courses = $this->teacher->getAllCoursesWithDetails($data->teacher_id);
+
+        if ($courses) {
+            http_response_code(200);
+            echo json_encode(['data' => $courses]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to fetch courses']);
+        }
     }
+    // public function getAllTeacherCourses()
+    // {
+    //     $data = json_decode(file_get_contents("php://input"));
+    //     if (empty($data->teacher_id)) {
+    //         http_response_code(400);
+    //         echo json_encode(['error' => 'Teacher ID is required']);
+    //         return;
+    //     }
+
+    //     $courses = $this->teacher->getAllCoursesWithDetails($data->teacher_id);
+    //     echo json_encode(['data' => $courses]);
+    // }
     public function modifierCourse($id)
     {
         $data = json_decode(file_get_contents("php://input"));
@@ -99,7 +119,15 @@ class TeacherController
     }
     public function supprimerCourse($id)
     {
-        $result = $this->teacher->deleteCourse($id);
+        $data = json_decode(file_get_contents("php://input"));
+
+        if (empty($data->course_id)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'course_id is required']);
+            return;
+        }
+
+        $result = $this->teacher->deleteCourse($data->course_id);
         if ($result) {
             http_response_code(200);
             echo json_encode(['message' => 'Course deleted successfully']);
@@ -152,7 +180,6 @@ class TeacherController
             echo json_encode(['error' => 'Failed to fetch statistics']);
         }
     }
-
 
 
 }

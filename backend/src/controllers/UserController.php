@@ -95,41 +95,7 @@ class UserController
             echo json_encode(['error' => 'User already exists or invalid data']);
         }
     }
-    // public function checkAuth()
-    // {
-    //     try {
-    //         $headers = getallheaders();
-    //         $auth_header = $headers['Authorization'] ?? '';
 
-    //         if (empty($auth_header) || !preg_match('/Bearer\s+(.*)$/i', $auth_header, $matches)) {
-    //             http_response_code(401);
-    //             echo json_encode(['error' => 'No token provided']);
-    //             return;
-    //         }
-
-    //         $jwt = $matches[1];
-    //         $decoded = JWT::decode($jwt, $this->jwt_secret, ['HS256']);
-
-
-    //         $user_data = $this->user->getUserById($decoded->user->id);
-
-    //         if (!$user_data || !$user_data['is_active']) {
-    //             throw new Exception('User not found or inactive');
-    //         }
-
-    //         http_response_code(200);
-    //         echo json_encode([
-    //             'authenticated' => true,
-    //             'user' => $user_data
-    //         ]);
-    //     } catch (Exception $e) {
-    //         http_response_code(401);
-    //         echo json_encode([
-    //             'authenticated' => false,
-    //             'error' => $e->getMessage()
-    //         ]);
-    //     }
-    // }
 
 
 }

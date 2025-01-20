@@ -1,54 +1,54 @@
 <?php
 namespace Models;
-
+require_once(dirname(__FILE__) . "/ManageCourse.php");
 require_once(dirname(__FILE__) . "/../config/Database.php");
+
 use Config\Database;
 use PDO;
-
-class Student extends User
+use Models\ManageCourse;
+class Student extends ManageCourse
 {
     private $conn;
     private $table = 'users';
 
     public function __construct()
     {
-        parent::__construct();
         $this->conn = (new Database())->getConnect();
     }
 
-    public function getAllCoursesWithDetails()
+    public function getAllCoursesWithDetails($teacherId)
     {
         $query = "SELECT 
-                      c.course_id, 
-                      c.title, 
-                      c.description, 
-                      cat.name AS category_name, 
-                      u.username AS teacher_name, 
-                      GROUP_CONCAT(t.name) AS tags
-                  FROM 
-                      courses c
-                  JOIN 
-                      categories cat ON c.category_id = cat.category_id
-                  JOIN 
-                      users u ON c.teacher_id = u.user_id
-                  LEFT JOIN 
-                      course_tags ct ON c.course_id = ct.course_id
-                  LEFT JOIN 
-                      tags t ON ct.tag_id = t.tag_id
-                  GROUP BY 
-                      c.course_id";
+            c.course_id, 
+            c.title, 
+            c.description, 
+            c.content, 
+            c.content_url, 
+            c.image_url, 
+            cat.name AS category_name, 
+            u.username AS teacher_name, 
+            GROUP_CONCAT(t.name) AS tags
+        FROM 
+            courses c
+        JOIN 
+            categories cat ON c.category_id = cat.category_id
+        JOIN 
+            users u ON c.teacher_id = u.user_id
+        LEFT JOIN 
+            course_tags ct ON c.course_id = ct.course_id
+        LEFT JOIN 
+            tags t ON ct.tag_id = t.tag_id
+        GROUP BY 
+            c.course_id";
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-        if (!$stmt->execute()) {
-
-            return false;
-        }
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $result;
+        if ($result) {
+            return $result;
+        }
+        return false;
     }
-
 
     public function viewMyCourses($studentId)
     {
@@ -64,7 +64,6 @@ class Student extends User
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
 
     public function getCourseById($courseId)
     {
@@ -111,6 +110,7 @@ class Student extends User
         return $this->conn->LastInsertId();
 
     }
+
     public function viewMyCoursesStudent($studentId)
     {
         $query = "SELECT c.*, u.username as teacher_name, e.enrollment_date 

@@ -17,7 +17,7 @@ class StudentController
     public function getAllcourses()
     {
 
-        $courses = $this->Student->getAllCoursesWithDetails();
+        $courses = $this->Student->getAllCoursesWithDetails(null);
 
         if ($courses) {
             http_response_code(201);

@@ -12,7 +12,30 @@ class AdminController
     {
         $this->admin = new Admin();
     }
+    public function getAllTeachers()
+    {
+        try {
 
+            $teachers = $this->admin->getAllTeachers();
+
+            if ($teachers) {
+
+                http_response_code(200);
+                echo json_encode(['data' => $teachers]);
+            } else {
+
+                http_response_code(404);
+                echo json_encode(['error' => 'No teachers found']);
+            }
+        } catch (\PDOException $e) {
+
+            error_log("Error fetching teachers: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to fetch teachers']);
+        }
+    }
+
+    // manage teachers
     public function validateTeacherAccounts()
     {
         $data = json_decode(json: file_get_contents("php://input"));
@@ -52,7 +75,28 @@ class AdminController
     }
 
     //   active suspend delete user
+    public function getAllUsers()
+    {
+        try {
 
+            $users = $this->admin->getAllUsers();
+
+            if ($users) {
+
+                http_response_code(200);
+                echo json_encode(['data' => $users]);
+            } else {
+
+                http_response_code(404);
+                echo json_encode(['error' => 'No users found']);
+            }
+        } catch (\PDOException $e) {
+
+            error_log("Error fetching users: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to fetch users']);
+        }
+    }
     public function activate()
     {
         $data = json_decode(file_get_contents("php://input"));
@@ -62,7 +106,7 @@ class AdminController
             return;
         }
 
-        $result = $this->admin->updateStatus($data->user_id, 1);
+        $result = $this->admin->StatusActiveSuspend($data->user_id, 1);
         if ($result) {
             echo json_encode(['message' => 'User activated successfully']);
         } else {
@@ -80,7 +124,7 @@ class AdminController
             return;
         }
 
-        $result = $this->admin->updateStatus($data->user_id, 0);
+        $result = $this->admin->StatusActiveSuspend($data->user_id, 0);
         if ($result) {
             echo json_encode(['message' => 'User suspended successfully']);
         } else {
@@ -119,13 +163,10 @@ class AdminController
         }
     }
 
-
-
-
     // COURSE CRUUUUUUD 
     public function getAllCourses()
     {
-        $courses = $this->admin->getAllCoursesWithDetails();
+        $courses = $this->admin->getAllCoursesWithDetails(null);
 
         if ($courses) {
             http_response_code(200);
@@ -174,9 +215,6 @@ class AdminController
             echo json_encode(['error' => 'Failed to delete course']);
         }
     }
-
-
-
 
     // Tags CRUD
     public function getAllTags()
@@ -326,48 +364,5 @@ class AdminController
             echo json_encode(['error' => 'Category not found']);
         }
     }
-    public function getAllTeachers()
-    {
-        try {
 
-            $teachers = $this->admin->getAllTeachers();
-
-            if ($teachers) {
-
-                http_response_code(200);
-                echo json_encode(['data' => $teachers]);
-            } else {
-
-                http_response_code(404);
-                echo json_encode(['error' => 'No teachers found']);
-            }
-        } catch (\PDOException $e) {
-
-            error_log("Error fetching teachers: " . $e->getMessage());
-            http_response_code(500);
-            echo json_encode(['error' => 'Failed to fetch teachers']);
-        }
-    }
-    public function getAllUsers()
-    {
-        try {
-
-            $users = $this->admin->getAllUsers();
-
-            if ($users) {
-
-                http_response_code(200);
-                echo json_encode(['data' => $users]);
-            } else {
-
-                http_response_code(404);
-                echo json_encode(['error' => 'No users found']);
-            }
-        } catch (\PDOException $e) {
-
-            error_log("Error fetching users: " . $e->getMessage());
-            http_response_code(500);
-            echo json_encode(['error' => 'Failed to fetch users']);
-        }
-    }
 }

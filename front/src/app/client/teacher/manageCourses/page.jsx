@@ -76,10 +76,10 @@ export default function ManageCoursesPage() {
 
   const handleDeleteCourse = async (courseId) => {
     try {
-      const response = await axios.delete(`http://localhost:2325/api.php?route=teacher/course/getAndPost/${courseId}`);
-      if (response.data.message === 'Course deleted successfully') {
-        setCourses(courses.filter((course) => course.course_id !== courseId));
-      }
+      const response = await axios.delete('http://localhost:2325/api.php?route=admin/courses/delete', {
+        data: { course_id: courseId },
+      });
+      setCourses(courses.filter((course) => course.course_id !== courseId));
     } catch (error) {
       setError('Failed to delete course: ' + error.message);
     }
@@ -193,12 +193,12 @@ export default function ManageCoursesPage() {
                 className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200"
               >
                 <div className="flex items-start gap-4">
-                  {course.content_type === 'video' ? (
-                    <Video className="h-6 w-6 text-purple-600 mt-1" />
-                  ) : (
-                    <FileText className="h-6 w-6 text-purple-600 mt-1" />
-                  )}
                   <div className="flex-1">
+                    {course.image_url && (
+                      <div className="relative h-48 w-full rounded-sm">
+                        <img src={course.image_url} className="w-full h-full object-cover rounded-lg" />
+                      </div>
+                    )}
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">{course.title}</h3>
                     <p className="text-gray-600 mb-4 line-clamp-2">{course.description}</p>
                     <div className="flex space-x-3">
@@ -224,7 +224,6 @@ export default function ManageCoursesPage() {
           </div>
         )}
 
-        {/* Edit Course Form */}
         {editingCourse && (
           <div className="mt-8 bg-white rounded-xl shadow-sm p-8">
             <div className="flex items-center gap-3 mb-6">

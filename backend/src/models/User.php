@@ -66,19 +66,5 @@ class User
         }
     }
 
-    public function getUserById($id)
-    {
-        try {
-            $query = "SELECT user_id, username, email, role, is_active FROM $this->table 
-                     WHERE user_id = :id AND is_active = 1";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(":id", $id);
-            $stmt->execute();
 
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $user;
-        } catch (\PDOException $e) {
-            return false;
-        }
-    }
 }

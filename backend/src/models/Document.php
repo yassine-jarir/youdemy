@@ -38,14 +38,17 @@ class Document extends Content
         return $stmt->execute();
     }
 
-    public function deleteContent($id)
+    public function deleteCourse($id)
     {
-        $query = "DELETE FROM courses WHERE course_id = :course_id AND content_type = 'document'";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':course_id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
+        try {
+            $query = "DELETE FROM courses WHERE course_id = :course_id";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':course_id', $id, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            return false;
+        }
     }
-
     public function getContentById($id)
     {
         $query = "SELECT * FROM courses WHERE course_id = :course_id AND content_type = 'document'";

@@ -30,16 +30,9 @@ try {
                 $controller->login();
             } else {
                 http_response_code(405);
-                echo json_encode(['error' => 'Method Not Allowed']);
             }
             break;
 
-
-        case 'validate-token':
-            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-                $controller->validateToken();
-            }
-            break;
 
         // Admin routes
         case 'admin/teachers/validate': // done
@@ -107,8 +100,6 @@ try {
                 $adminController->deleteTag();
             }
             break;
-
-
 
         // Admin Category routes
         case 'admin/categories': // done
