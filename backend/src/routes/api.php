@@ -206,7 +206,15 @@ try {
             }
             break;
 
+        // visiteur 
+        case 'student/allCoursesP':
+            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+                $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 10;
+                $offset = isset($_GET['offset']) ? (int) $_GET['offset'] : 0;
 
+                $studentController->getAllcoursesP($limit, $offset);
+            }
+            break;
     }
 } catch (Exception $e) {
     http_response_code(500);

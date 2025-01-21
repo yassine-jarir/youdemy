@@ -3,25 +3,31 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
-import { BookOpen, FileText, Tag as TagIcon, User, X } from 'lucide-react';
+import { BookOpen, FileText, Tag as TagIcon, User } from 'lucide-react';
 
 export default function VisiteursPage() {
   const [courses, setCourses] = useState([]);
-  const [filteredCourses, setFilteredCourses] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 2;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const coursesResponse = await axios.get('http://localhost:2325/api.php?route=student/allCourses');
-        setCourses(coursesResponse.data.dastaa);
-        setFilteredCourses(coursesResponse.data.dastaa);
+        const offset = (currentPage - 1) * limit;
+        const response = await axios.get(
+          `http://localhost:2325/api.php?route=student/allCoursesP&limit=${limit}&offset=${offset}`
+        );
 
-        const uniqueCategories = [...new Set(coursesResponse.data.dastaa.map((course) => course.category_name))];
-        setCategories(uniqueCategories);
+        if (response.data.data) {
+          setCourses(response.data.data);
+          const totalCourses = response.data.total;
+          setTotalPages(Math.ceil(totalCourses / limit));
+        } else {
+          console.error('Unexpected API response:', response.data);
+        }
       } catch (error) {
         setError('Failed to fetch data: ' + error.message);
       } finally {
@@ -30,16 +36,10 @@ export default function VisiteursPage() {
     };
 
     fetchData();
-  }, []);
+  }, [currentPage]);
 
-  const handleCategoryChange = (category) => {
-    setSelectedCategory(category);
-    if (category === '') {
-      setFilteredCourses(courses);
-    } else {
-      const filtered = courses.filter((course) => course.category_name === category);
-      setFilteredCourses(filtered);
-    }
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   if (loading) {
@@ -70,42 +70,16 @@ export default function VisiteursPage() {
             <h2 className="text-3xl font-bold text-gray-900">Catalogue des Cours</h2>
           </div>
           <p className="text-gray-600 ml-11 mb-6">Parcourez la liste des cours disponibles.</p>
-
-          <div className="flex flex-wrap gap-2 ml-11">
-            <button
-              onClick={() => handleCategoryChange('')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 
-                ${
-                  selectedCategory === '' ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-            >
-              Toutes les catégories
-            </button>
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => handleCategoryChange(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 
-                  ${
-                    selectedCategory === category
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 mb-8">
-          {filteredCourses.length === 0 ? (
+          {courses.length === 0 ? (
             <div className="md:col-span-2 bg-white rounded-xl shadow-sm p-8 text-center">
               <FileText className="h-12 w-12 text-gray-400 mx-auto mb-3" />
               <p className="text-gray-500 text-lg">Aucun cours trouvé.</p>
             </div>
           ) : (
-            filteredCourses.map((course) => (
+            courses.map((course) => (
               <div
                 key={course.course_id}
                 className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-200"
@@ -129,7 +103,7 @@ export default function VisiteursPage() {
                     <div className="flex gap-2">
                       <Link
                         href="/auth/sign-in"
-                        className={`flex items-center justify-center gap-2 w-full px-4 py-2 text-sm font-medium text-white bg-purple-700 rounded-lg hover:bg-purple-900 transition-colors duration-200  `}
+                        className={`flex items-center justify-center gap-2 w-full px-4 py-2 text-sm font-medium text-white bg-purple-700 rounded-lg hover:bg-purple-900 transition-colors duration-200`}
                       >
                         S'inscrire
                       </Link>
@@ -139,6 +113,19 @@ export default function VisiteursPage() {
               </div>
             ))
           )}
+        </div>
+
+        <div className="flex justify-center gap-2 mt-8">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 
+                ${currentPage === page ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+            >
+              {page}
+            </button>
+          ))}
         </div>
       </div>
     </div>

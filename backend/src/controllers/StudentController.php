@@ -88,4 +88,20 @@ class StudentController
             echo json_encode(['error' => 'No courses found']);
         }
     }
+
+    public function getAllcoursesP($limit, $offset)
+    {
+        $result = $this->Student->getAllCoursesWithPagination($limit, $offset);
+
+        if ($result['data']) {
+            http_response_code(200);
+            echo json_encode([
+                'data' => $result['data'],
+                'total' => $result['total'],
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to fetch courses']);
+        }
+    }
 }

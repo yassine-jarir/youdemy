@@ -123,4 +123,34 @@ class Student extends ManageCourse
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    // vis
+    public function getAllCoursesWithPagination($limit, $offset)
+    {
+        $query = "SELECT c.course_id, c.title, c.description, c.content, c.content_url, c.image_url, 
+                         cat.name AS category_name, u.username AS teacher_name, 
+                         GROUP_CONCAT(t.name) AS tags
+                  FROM courses c
+                  JOIN categories cat ON c.category_id = cat.category_id
+                  JOIN users u ON c.teacher_id = u.user_id
+                  JOIN course_tags ct ON c.course_id = ct.course_id
+                  JOIN tags t ON ct.tag_id = t.tag_id
+                  GROUP BY c.course_id
+                  LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $countQuery = "SELECT COUNT(*) as total FROM courses";
+        $countStmt = $this->conn->prepare($countQuery);
+        $countStmt->execute();
+        $total = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
+
+        return [
+            'data' => $courses,
+            'total' => $total,
+        ];
+    }
 }

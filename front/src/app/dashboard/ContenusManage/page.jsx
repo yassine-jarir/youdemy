@@ -30,6 +30,7 @@ export default function Page() {
     try {
       const response = await axios.get('http://localhost:2325/api.php?route=admin/tags');
       setTags(response.data.data);
+      console.log(response);
     } catch (error) {
       console.error('Failed to fetch tags:', error);
     }
